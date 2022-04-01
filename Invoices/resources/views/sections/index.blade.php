@@ -1,4 +1,8 @@
 @extends('layouts.master')
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+</head>
 @section('title','الاقسام')
 
 @section('page-header')
@@ -22,14 +26,25 @@
 						<div class="card mg-b-20">
 							<div class="card-header pb-0">
 								<div class="d-flex justify-content-between">
-								<a class="modal-effect btn btn-primary " data-effect="effect-slide-in-right" data-toggle="modal" href="#modaldemo8">اضافة قسم</a>
+								<a class="modal-effect btn btn-primary " id="addsection" data-effect="effect-slide-in-right" data-toggle="modal" href="#modaldemo8">اضافة قسم</a>
 								</div>
 							</div>
 							<div class="card-body">
 
-                                @if(session()->has('message'))
+                                @if ($errors->any())
+                                    <div class="alert alert-danger">
+                                        <ul>
+                                            @foreach ($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
+
+                            <!-- Create Post Form -->
+                                @if(session()->has('success'))
                                     <div class="alert alert-success">
-                                        {{ session()->get('message') }}
+                                        {{ session()->get('success') }}
                                     </div>
                                 @endif
 
@@ -47,12 +62,18 @@
 											</tr>
 										</thead>
 										<tbody>
+                                        @php $i=0;  @endphp
                                         @forelse($section as $item)
+                                            @php $i++;  @endphp
 											<tr>
-												<td>1</td>
+												<td>{{$i}}</td>
 												<td>{{$item->section_name}}</td>
                                                 <td>{{$item->description}}</td>
-												<td>61</td>
+												<td>
+                                                    <button href="" onclick="edit({{$item->id}});" class="btn btn-primary">Edit</button>
+                                                    <button href="{{route('sections.delete',$item->id)}}" onclick="deletesection({{$item->id}});" class="btn btn-danger">Delete</button>
+
+                                                </td>
 
 											</tr>
                                         @empty
@@ -73,52 +94,16 @@
 		<!-- Basic modal -->
 		<div class="modal" id="modaldemo8">
 			<div class="modal-dialog" role="document">
-				<div class="modal-content modal-content-demo">
-					<div class="modal-header">
-						<h6 class="modal-title">اضافة قسم</h6><button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
-					</div>
-                    <form method="post" action="{{route('sections.store')}}">
-                    <div class="modal-body">
-                            @csrf
-{{--                        @if ($errors->any())--}}
-{{--                            <div class="alert alert-danger">--}}
-{{--                                <ul>--}}
-{{--                                    @foreach ($errors->all() as $error)--}}
-{{--                                        <li>{{ $error }}</li>--}}
-{{--                                    @endforeach--}}
-{{--                                </ul>--}}
-{{--                            </div>--}}
-{{--                    @endif--}}
+				<div class="modal-content modal-content-demo" id="content">
 
-                    <!-- Create Post Form -->
-                            <div class="form-group">
-                                <label for="section_name">اسم القسم</label>
-                                <input type="text" class="form-control" name="section_name" id="section_name" >
-                                @error('section_name')
-                                <div class="alert alert-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="form-group">
-                                <label for="description"> ملاحظات</label>
-                                <textarea  class="form-control" name="description" id="description"rows="3" ></textarea>
-                            </div>
-
-
-					</div>
-					<div class="modal-footer">
-						<button class="btn ripple btn-primary" type="submit">تأكيد</button>
-						<button class="btn ripple btn-secondary" data-dismiss="modal" type="button">Close</button>
-
-                </div>
-                    </form>
 				</div>
 			</div>
 		</div>
 		<!-- End Basic modal -->
 
 
-					<!--div-->
+
+
 
 				</div>
 				<!-- row closed -->
@@ -146,8 +131,39 @@
 <script src="{{URL::asset('assets/plugins/datatable/js/buttons.colVis.min.js')}}"></script>
 <script src="{{URL::asset('assets/plugins/datatable/js/dataTables.responsive.min.js')}}"></script>
 <script src="{{URL::asset('assets/plugins/datatable/js/responsive.bootstrap4.min.js')}}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
 <!--Internal  Datatable js -->
 <script src="{{URL::asset('assets/js/table-data.js')}}"></script>
 <script src="{{URL::asset('assets/js/modal.js')}}"></script>
+
+
+    <script>
+
+        $.ajaxSetup({
+            headers:{
+                'X-CSRF-TOKEN':$('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $('#addsection').click((e)=>{
+            e.preventDefault()
+            $.ajax({
+                type: "GET",
+                url: `{{route('sections.create')}}`,
+                success:function (response){
+                    $('#content').html(response)
+
+
+                }
+            })
+        });
+
+
+    </script>
 
 @endsection

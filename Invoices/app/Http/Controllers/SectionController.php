@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Sections\StoreRequest;
 use App\Models\Section;
+use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class SectionController extends Controller
 {
+    use ResponseTrait;
     /**
      * Display a listing of the resource.
      *
@@ -27,7 +29,7 @@ class SectionController extends Controller
      */
     public function create()
     {
-        //
+        return view('sections.create');
     }
 
     /**
@@ -46,10 +48,10 @@ class SectionController extends Controller
                 'created_by' => Auth::user()->name,
             ]);
 
-            return redirect()->back()->with('success','تمت الاضافة بنجاح');
+            return $this->returnSuccess('تمت الاضافة بنجاح',200);
         } catch (\Exception $exception) {
-            dd($exception->getMessage());
-            return redirect()->back()->withErrors('حدث خطأ ما');
+//            dd($exception->getMessage());
+            return $this->returnError('حدث خطأ ما',400);
         }
     }
 
@@ -93,8 +95,10 @@ class SectionController extends Controller
      * @param  \App\Models\Section  $section
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Section $section)
+    public function delete($id)
     {
-        //
+        $section=Section::FindOrFail($id);
+        $section->delete();
+        $this->returnSuccess('تم الحذف بنجاح',200);
     }
 }
