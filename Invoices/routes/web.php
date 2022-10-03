@@ -32,14 +32,10 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::resource('invoices', InvoiceController::class);
-Route::resource('sections', SectionController::class)->except('destroy')->names([
-    'create' => 'sections.create',
-    'store' => 'sections.store',
-    'edit' => 'sections.edit',
-    'update' => 'sections.update',
+Route::resource('sections', SectionController::class);
 
-]);
-Route::get('/sections/delete/{$id}',[SectionController::class,'delete'])->name('sections.delete');
+//]);
+//Route::get('/sections/delete/{$id}',[SectionController::class,'delete'])->name('sections.delete');
 
 
 
