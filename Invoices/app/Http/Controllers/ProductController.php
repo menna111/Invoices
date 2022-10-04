@@ -77,9 +77,20 @@ class productController extends Controller
      * @param  \App\product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, product $product)
+    public function update(Request $request)
     {
-        //
+        $id = Section::where('section_name', $request->section_name)->first()->id;
+
+        $Product = Product::findOrFail($request->pro_id);
+
+        $Product->update([
+            'Product_name' => $request->Product_name,
+            'description' => $request->description,
+            'section_id' => $id,
+        ]);
+
+        session()->flash('Edit', 'تم تعديل المنتج بنجاح');
+        return back();
     }
 
     /**
@@ -88,8 +99,11 @@ class productController extends Controller
      * @param  \App\product  $product
      * @return \Illuminate\Http\Response
      */
-    public function destroy(product $product)
+    public function destroy(Request $request)
     {
-        //
+        $Products = Product::findOrFail($request->pro_id);
+        $Products->delete();
+        session()->flash('delete', 'تم حذف المنتج بنجاح');
+        return back();
     }
 }
